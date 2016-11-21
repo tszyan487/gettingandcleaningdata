@@ -106,11 +106,13 @@ measure <- train_test[,grep("mean|std",names(train_test))]
 # From the data set in step 4, creates a second, 
 # independent tidy data set with the average of each variable for each activity and each subject.
 
-train_test_v2 <- melt(train_test, id=c("Subject","Activity_Name"))
+train_test_v2<- train_test[c(2:564)]
 
-train_test_v2 <- train_test_v2[c(2:5)]
+train_test_v2 <- melt(train_test_v2, id=c("Subject","Activity_Name"))
 
 train_test_mean <- cast(train_test_v2, Subject+Activity_Name ~ variable, mean)
+
+write.table(train_test_mean,"result.txt", row.name = F)
 
 
 
