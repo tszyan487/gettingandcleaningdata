@@ -1,14 +1,3 @@
-
-# =============================================================================================== #  
-#
-# 1. Merges the training and the test sets to create one data set.
-# 2. Extracts only the measurements on the mean and standard deviation for each measurement.
-# 3. Uses descriptive activity names to name the activities in the data set
-# 4. Appropriately labels the data set with descriptive variable names.
-# 5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
-#
-# =============================================================================================== #  
-
 rm(list = ls())
 
 library(readxl)
@@ -17,8 +6,7 @@ library(xlsx)
 library(tidyr)
 library(reshape)
 
-
-workdir <- "C:/Users/ili/Documents/Development/Coursera/Getting and Cleaning Data/Week4/Peer Assignment/UCI HAR Dataset/"
+workdir <- "C:/Users/Ivy/Documents/Coursera/Getting and Cleaning Data/Peer Assignment/UCI HAR Dataset/"
 setwd(workdir)
 
 # Measurements
@@ -31,6 +19,16 @@ colnames(activity) <- c("Activity_Code", "Activity_Name")
 train_num <- c(1:7352)
 test_num <- c(1:2947)
 
+# =============================================================================================== #  
+#
+# 1. Merges the training and the test sets to create one data set.
+# 2. Extracts only the measurements on the mean and standard deviation for each measurement.
+# 3. Uses descriptive activity names to name the activities in the data set
+# 4. Appropriately labels the data set with descriptive variable names.
+# 5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+#
+# =============================================================================================== #  
+# 
 # Import Training Set File
 #
 # ----------------------------------------------------------------------------------------------- #
@@ -59,7 +57,6 @@ train_activity <- cbind("Train",train_activity)
 names(train_activity)[1] <- "Set"
 
 # Combine the Train Data Set with Measurments
-# Appropriately labels the data set with descriptive variable names.
 names(train_activity)[6:566] <- c(as.vector(features$V2))
 train_activity <- train_activity[c(1:2,5:566)]
 
@@ -88,34 +85,30 @@ names(test_activity)[1] <- "Subject"
 test_activity <- cbind("Test",test_activity)
 names(test_activity)[1] <- "Set"
 
-# Combine the Test Data Set with Measurments
-# Appropriately labels the data set with descriptive variable names.
+# Combine the Train Data Set with Measurments
 names(test_activity)[6:566] <- c(as.vector(features$V2))
 test_activity <- test_activity[c(1:2,5:566)]
 
 # =============================================================================================== #
 # Combine the Train and Test Data together
-# Uses descriptive activity names to name the activities in the data set
-
 train_test <- rbind(train_activity,test_activity)
 
 # Extracts only measurement contains Mean and Standard Deviation.
-measure <- train_test[,grep("mean|std",names(train_test))]
+measure1 <- subset(train_test, grepl("mean|std",names(train_test)))
+measure1 <- measure1[c(2:563)]
 
 # =============================================================================================== #
 # From the data set in step 4, creates a second, 
 # independent tidy data set with the average of each variable for each activity and each subject.
 
-train_test_v2<- train_test[c(2:564)]
-
-train_test_v2 <- melt(train_test_v2, id=c("Subject","Activity_Name"))
+train_test_v2 <- melt(measure1, id=c("Subject","Activity_Name"))
 
 train_test_mean <- cast(train_test_v2, Subject+Activity_Name ~ variable, mean)
 
-write.table(train_test_mean,"result.txt", row.name = F)
+output <- "C:/Users/Ivy/Documents/Coursera/Getting and Cleaning Data/"
+setwd(output)
 
-
-
+write.table(train_test_mean,"result.txt",row.names = F)
 
 
 
